@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Guia de Flora Pró-Mata</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #193A1E;
+            /* Verde musgo */
+            --secondary-color: #2E8B57;
+            --background-color: linear-gradient(45deg, #000000, #333333);
+            /* Fundo degradê preto */
+            --text-color: white;
+            --font-family: Calibri, Arial, sans-serif;
+            --blue: #4169E1;
+            /* Azul para o efeito */
+        }
+
+        body {
+            font-family: var(--font-family);
+            margin: 0;
+            padding: 5px;
+            background: var(--background-color);
+            color: var(--text-color);
+            user-select: none;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .page-container {
+            border: 1px solid rgba(46, 139, 87, 0.4);
+            border-radius: 8px;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.4);
+            box-shadow: 0 0 20px rgba(25, 58, 30, 0.5);
+        }
+
+        .page-title {
+            background: linear-gradient(45deg, #000000, #222222);
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid rgba(46, 139, 87, 0.4);
+        }
+
+        .page-title h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 600;
+            background: linear-gradient(to right, #2E8B57, #193A1E);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            letter-spacing: 2px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .page-title h1::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50%;
+            height: 1px;
+            background: linear-gradient(to right, transparent, rgba(46, 139, 87, 0.5), transparent);
+        }
+
+        .menu {
+            background: linear-gradient(45deg, #000000, #222222);
+            padding: 8px 5px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 5px;
+            border-bottom: 1px solid rgba(46, 139, 87, 0.4);
+        }
+
+        .menu a {
+            color: white;
+            text-decoration: none;
+            font-size: 12px;
+            /* Fonte menor */
+            padding: 8px 12px;
+            /* Padding ajustado */
+            border: 2px solid var(--blue);
+            /* Contorno azul */
+            border-radius: 5px;
+            transition: all 150ms ease-in-out;
+            /* Transição suave */
+            background-color: black;
+            /* Cor de fundo preta */
+            position: relative;
+            /* Para o efeito 3D */
+            cursor: pointer;
+            /* Garante que o cursor mude para pointer */
+            text-align: center;
+            /* Centraliza o texto dentro dos botões */
+        }
+
+        .menu a.glow-on-hover {
+            width: auto;
+            /* Ajuste para o tamanho do conteúdo */
+            height: auto;
+            /* Ajuste para o tamanho do conteúdo */
+            border: none;
+            outline: none;
+            color: #d7d7d7;
+            /* Cor do texto */
+            background: black;
+            /* Cor de fundo preta */
+            cursor: pointer;
+            position: relative;
+            z-index: 0;
+            border-radius: 10px;
+        }
+
+        .menu a.glow-on-hover:before {
+            content: '';
+            background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            background-size: 400%;
+            z-index: -1;
+            filter: blur(5px);
+            width: calc(100% + 4px);
+            height: calc(100% + 4px);
+            animation: glowing 20s linear infinite;
+            opacity: 0;
+            transition: opacity .3s ease-in-out;
+            border-radius: 10px;
+        }
+
+        .menu a.glow-on-hover:hover:before {
+            opacity: 1;
+        }
+
+        .menu a.glow-on-hover:after {
+            z-index: -1;
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: black;
+            /* Cor de fundo preta */
+            left: 0;
+            top: 0;
+            border-radius: 10px;
+        }
+
+        .menu a.active {
+            background-color: #46699e;
+            /* Verde ainda mais escuro para link ativo */
+            border-color: #4b4c92ec;
+            /* Contorno neon verde */
+            box-shadow: 0 0 10px #6b65be, 0 0 20px #323492;
+            /* Efeito neon */
+        }
+
+        @keyframes glowing {
+            0% {
+                background-position: 0 0;
+            }
+
+            50% {
+                background-position: 400% 0;
+            }
+
+            100% {
+                background-position: 0 0;
+            }
+        }
+
+        .content {
+            padding: 10px;
+            text-align: center;
+            position: relative;
+        }
+
+        .book-container {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+            display: inline-block;
+            max-width: 40%;
+            margin: 0 auto;
+            border: 1px solid rgba(46, 139, 87, 0.4);
+            border-radius: 8px;
+            position: relative;
+        }
+
+        canvas {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .navigation {
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .navigation button {
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #b3ff00;
+            /* Azul do antigo botão de zoom */
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-family: var(--font-family);
+            transition: background-color 0.3s ease;
+        }
+
+        .navigation button:hover {
+            background-color: #88ff00;
+            /* Azul mais escuro ao passar o mouse */
+        }
+
+        .navigation button:disabled {
+            background-color: #ccc;
+            /* Cinza quando desabilitado */
+            cursor: not-allowed;
+        }
+
+        /* Estilos para o copyright */
+        .copyright {
+            text-align: center;
+            margin-top: 8px;
+            padding: 8px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            border-top: 1px solid rgba(46, 139, 87, 0.4);
+        }
+
+        .copyright p {
+            margin: 5px 0;
+            /* Reduzir o espaço entre os parágrafos */
+        }
+
+        .copyright a {
+            color: var(--text-color);
+            text-decoration: none;
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+        }
+
+        .copyright a:hover {
+            color: #00ff00;
+            /* Verde neon */
+            text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00, 0 0 20px #00ff00;
+            /* Efeito neon */
+        }
+
+        @media (max-width: 768px) {
+            .book-container {
+                max-width: 90%;
+            }
+
+            .menu a {
+                font-size: 10px;
+                /* Fonte menor em telas menores */
+                padding: 6px 10px;
+                /* Padding menor para caber mais botões */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .menu a {
+                font-size: 10px;
+                /* Fonte ainda menor */
+                padding: 4px 8px;
+                /* Padding menor */
+            }
+        }
+
+        .nav-overlay {
+            position: absolute;
+            top: 50%;
+            left: -70px; /* Mova para fora do contêiner à esquerda */
+            right: -70px; /* Mova para fora do contêiner à direita */
+            display: flex;
+            justify-content: space-between; /* Distribui os botões nas extremidades */
+            transform: translateY(-50%);
+        }
+
+        .nav-overlay button {
+            background-color: rgba(255, 255, 255, 0.5); /* Fundo branco transparente */
+            color: black; /* Cor do texto */
+            border: none; /* Remover a borda */
+            border-radius: 50%; /* Bordas arredondadas */
+            padding: 3px; /* Diminui o espaço ao redor do botão */
+            cursor: pointer; /* Muda o cursor para pointer */
+            transition: background-color 0.3s ease; /* Transição suave */
+            width: 30px; /* Largura do botão */
+            height: 30px; /* Altura do botão */
+            font-size: 20px; /* Tamanho do texto dentro do botão */
+        }
+
+        .nav-overlay button:hover {
+            background-color: rgba(255, 255, 255, 0.8); /* Fundo mais opaco ao passar o mouse */
+        }
+
+        /* Adicione estes estilos ao seu CSS existente */
+        .zoom-in {
+            cursor: zoom-in !important;
+        }
+        
+        .zoom-out {
+            cursor: zoom-out !important;
+        }
+
+        /* Adicione estes novos estilos */
+        .zoom-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            cursor: zoom-out;
+            overflow-y: auto;
+            padding: 20px 0;
+        }
+
+        .zoom-overlay.active {
+            display: block;
+        }
+
+        .zoom-overlay canvas {
+            display: block;
+            margin: 0 auto;
+            max-width: 100%; /* Ajustado para 100% */
+            height: auto;
+        }
+
+        /* Importante: Adicione este estilo para o cursor do canvas principal */
+        #pdf-canvas {
+            cursor: zoom-in !important;
+        }
+
+        #zoom-canvas {
+            cursor: zoom-out !important;
+        }
+
+        #link-capa.glow-on-hover, #link-ultima.glow-on-hover {
+            border: 2px solid #2E8B57;
+        }
+
+        #link-capa.glow-on-hover:before, #link-ultima.glow-on-hover:before {
+            background: linear-gradient(45deg, #2E8B57, #193A1E, #2E8B57);
+            background-size: 200%;
+        }
+
+        #link-capa.active, #link-ultima.active {
+            background-color: #193A1E;
+            border-color: #2E8B57;
+            box-shadow: 0 0 10px #2E8B57, 0 0 20px #193A1E;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-container">
+        <div class="page-title">
+            <h1>Guia de Flora Pró-Mata</h1>
+        </div>
+        <!-- Menu superior -->
+        <div class="menu">
+            <a href="#" id="link-capa" class="glow-on-hover active" data-page="1"><strong>Capa</strong></a>
+            <a href="#" class="glow-on-hover" data-page="4"><strong>Apresentação</strong></a>
+            <a href="#" class="glow-on-hover" data-page="9"><strong>Ervas epífitas</strong></a>
+            <a href="#" class="glow-on-hover" data-page="20"><strong>Ervas terrícolas</strong></a>
+            <a href="#" class="glow-on-hover" data-page="38"><strong>Trepadeiras</strong></a>
+            <a href="#" class="glow-on-hover" data-page="65"><strong>Arbustos e subarbustos</strong></a>
+            <a href="#" class="glow-on-hover" data-page="82"><strong>Árvores</strong></a>
+            <a href="#" class="glow-on-hover" data-page="117"><strong>Créditos</strong></a>
+            <a href="#" class="glow-on-hover" id="link-ultima" data-page="last"><strong>Última página</strong></a>
+        </div>
+
+        <!-- Conteúdo principal -->
+        <div class="content">
+            <div class="book-container">
+                <div class="nav-overlay">
+                    <button id="prev-overlay" onclick="prevPage()" disabled>‹</button>
+                    <button id="next-overlay" onclick="nextPage()">›</button>
+                </div>
+                <canvas id="pdf-canvas" style="width: 100%;"></canvas>
+            </div>
+
+            <!-- Textos de copyright -->
+            <div class="copyright">
+                <p>© 2025 Desenvolvido por <a href="https://www.instagram.com/petryfrederico/" target="_blank">Frederico
+                        Schäffer Petry</a></p>
+            </div>
+        </div>
+
+        <!-- Adicione este elemento após o div.content -->
+        <div id="zoom-overlay" class="zoom-overlay">
+            <canvas id="zoom-canvas"></canvas>
+        </div>
+    </div>
+
+    <script>
+        const url = 'guia-de-flora.pdf';
+        let pdfDoc = null;
+        let currentPage = 1;
+        let zoomLevel = 0.4; // Nível de zoom normal
+        const pdfCanvas = document.getElementById('pdf-canvas');
+        const zoomCanvas = document.getElementById('zoom-canvas');
+        const zoomOverlay = document.getElementById('zoom-overlay');
+        const ctx = pdfCanvas.getContext('2d');
+        const zoomCtx = zoomCanvas.getContext('2d');
+
+        pdfjsLib.getDocument(url).promise.then(function(pdf) {
+            pdfDoc = pdf;
+            renderPage(currentPage);
+        });
+
+        function renderPage(num, targetCanvas = pdfCanvas, scale = zoomLevel) {
+            pdfDoc.getPage(num).then(function(page) {
+                const viewport = page.getViewport({ scale: scale });
+                targetCanvas.height = viewport.height;
+                targetCanvas.width = viewport.width;
+
+                const renderContext = {
+                    canvasContext: targetCanvas.getContext('2d'),
+                    viewport: viewport
+                };
+
+                targetCanvas.getContext('2d').clearRect(0, 0, targetCanvas.width, targetCanvas.height);
+                page.render(renderContext).promise.then(() => {
+                    updateButtons();
+                    updateActiveLink();
+                });
+            });
+        }
+
+        // Função para mostrar o zoom
+        function showZoom() {
+            zoomOverlay.classList.add('active');
+            renderPage(currentPage, zoomCanvas, 1.0); // Alterado para 1.0
+        }
+
+        // Função para esconder o zoom
+        function hideZoom() {
+            zoomOverlay.classList.remove('active');
+        }
+
+        // Event listeners para zoom
+        pdfCanvas.addEventListener('click', (e) => {
+            showZoom();
+        });
+
+        zoomOverlay.addEventListener('click', (e) => {
+            hideZoom();
+        });
+
+        function updateButtons() {
+            document.getElementById('prev-overlay').disabled = currentPage <= 1;
+            document.getElementById('next-overlay').disabled = currentPage >= pdfDoc.numPages;
+        }
+
+        function updateActiveLink() {
+            document.querySelectorAll('.menu a').forEach(link => {
+                link.classList.remove('active');
+            });
+
+            if (currentPage === 1) {
+                document.getElementById('link-capa').classList.add('active');
+            } else if (currentPage === pdfDoc.numPages) {
+                document.getElementById('link-ultima').classList.add('active');
+            } else {
+                const pageLinks = document.querySelectorAll(`.menu a[data-page="${currentPage}"]`);
+                if (pageLinks.length > 0) {
+                    pageLinks[0].classList.add('active');
+                }
+            }
+        }
+
+        // Mantenha as outras funções (updateButtons, updateActiveLink, prevPage, nextPage) como estão
+        
+        // Modifique os event listeners do menu para incluir hideZoom
+        document.querySelectorAll('.menu a[data-page]').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                hideZoom(); // Esconde o zoom ao mudar de página
+                const pageIndex = parseInt(link.getAttribute('data-page'), 10);
+                currentPage = pageIndex;
+                renderPage(currentPage);
+            });
+        });
+
+        document.getElementById('link-capa').addEventListener('click', (e) => {
+            e.preventDefault();
+            hideZoom();
+            currentPage = 1;
+            renderPage(currentPage);
+        });
+
+        document.getElementById('link-ultima').addEventListener('click', (e) => {
+            e.preventDefault();
+            hideZoom();
+            currentPage = pdfDoc.numPages;
+            renderPage(currentPage);
+        });
+
+        // Modifique as funções de navegação para incluir hideZoom
+        function prevPage() {
+            if (currentPage > 1) {
+                hideZoom();
+                currentPage--;
+                renderPage(currentPage);
+            }
+        }
+
+        function nextPage() {
+            if (currentPage < pdfDoc.numPages) {
+                hideZoom();
+                currentPage++;
+                renderPage(currentPage);
+            }
+        }
+    </script>
+</body>
+
+</html>
